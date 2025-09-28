@@ -20,6 +20,8 @@ const login = () => {
        
     try{
         const userLogin=await axios.post('https://blog-next-server-5nzm.onrender.com/api/login',userData,{ withCredentials: true });
+
+console.log(userLogin.status)
         if(userLogin.status===200 || userLogin.status===201){
            toast.success("Login success");
             const finalData=userLogin.data.data;

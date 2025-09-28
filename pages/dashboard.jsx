@@ -83,6 +83,7 @@ export async function getServerSideProps(context) {
   console.log("==========================getServerSideProps=========================")
   try {
     const cookies = context.req.headers.cookie || ""; // all cookies as string
+    console.log(cookies)
 
     const axiosSSR = axios.create({
       baseURL: "https://blog-next-server-5nzm.onrender.com/api",
