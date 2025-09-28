@@ -31,7 +31,7 @@ const AuthProvider = ({children}) => {
 
     const logout=async()=>{
      try{
-       const logoutResult=await axios.delete("http://localhost:5001/api/removeUser",{withCredentials:true})
+       const logoutResult=await axios.delete("https://blog-next-server-5nzm.onrender.com/api/removeUser",{withCredentials:true})
       if(logoutResult.status===200){
         setUser(null)
         localStorage.removeItem("userData")
@@ -45,7 +45,7 @@ const AuthProvider = ({children}) => {
     useEffect(()=>{
       const isTokeExpired=async ()=>{
           try{
-            const tokenExpiry=await axios.get('http://localhost:5001/api/checkExpiry',{withCredentials:true})
+            const tokenExpiry=await axios.get('https://blog-next-server-5nzm.onrender.com/api/checkExpiry',{withCredentials:true})
             if(tokenExpiry.status===200){
               console.log("valid token")
             }
