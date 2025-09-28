@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 import toast from 'react-hot-toast';
 import axiosInstance from '@/Middleware/Middleware';
-import DashboardContet from '@/components/dashboardContent';
+import DashboardContet from '@/components/DashboardContent';
 import AddBlog from '@/components/AddBlog';
 import Profile from '@/components/Profile';
 import AllBlogs from '@/components/AllBlogs';
