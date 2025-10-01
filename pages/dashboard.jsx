@@ -79,34 +79,67 @@ const dashboard = ({ initialBlogs, initialComments ,initialProfile,blogUsers}) =
   )
 }
 
+ export async function getServerSideProps(context) {
+   console.log("==========================getServerSideProps=========================")
+  try {
+  const cookies = context.req.headers.cookie || ""; // all cookies as string
+     console.log(cookies)
+    const axiosSSR = axios.create({
+       baseURL: "https://blog-next-server-5nzm.onrender.com/api",
+       headers: {
+         Cookie: cookies, // send cookies to backend
+       },
+       withCredentials: true,
+     });
+
+     const [blogsRes, commentsRes,profileRes,blogUserRes] = await Promise.all([
+       axiosSSR.get('/getBlogByUser'),
+       axiosSSR.get('/getCommentByUser'),
+       axiosSSR.get('/getProfile'),
+       axiosSSR.get('/getUsers')
+     ]);
+     console.log("=======================================================")
+     console.log(blogsRes)
+     return {
+       props: {
+         initialBlogs: blogsRes.data?.userBlogs || [],
+         initialComments: commentsRes.data?.getCommentsByUserResult || [],
+         initialProfile:profileRes.data?.getProfileResult || [],
+         blogUsers:blogUserRes.data?.getUsersResult || [],
+       },
+     };
+   } catch (err) {
+     console.error("SSR fetch error:", err.message);
+
+     if (err.response?.status === 401) {
+       return {
+         redirect: { destination: "/login", permanent: false },
+       };
+     }
+
+    return { props: { initialBlogs: [], initialComments: [] } };
+    }
+ }
+
 // export async function getServerSideProps(context) {
-//   console.log("==========================getServerSideProps=========================")
 //   try {
-//     const cookies = context.req.headers.cookie || ""; // all cookies as string
-//     console.log(cookies)
+//     const protocol = context.req.headers['x-forwarded-proto'] || 'https';
+//     const host = context.req.headers.host;
+//     const baseURL = `${protocol}://${host}/api/proxy`;
 
-//     const axiosSSR = axios.create({
-//       baseURL: "https://blog-next-server-5nzm.onrender.com/api",
-//       headers: {
-//         Cookie: cookies, // send cookies to backend
-//       },
-//       withCredentials: true,
-//     });
-
-//     const [blogsRes, commentsRes,profileRes,blogUserRes] = await Promise.all([
-//       axiosSSR.get('/getBlogByUser'),
-//       axiosSSR.get('/getCommentByUser'),
-//       axiosSSR.get('/getProfile'),
-//       axiosSSR.get('/getUsers')
+//     const [blogsRes, commentsRes, profileRes, blogUserRes] = await Promise.all([
+//       axios.get(`${baseURL}/getBlogByUser`, { headers: { cookie: context.req.headers.cookie || "" } }),
+//       axios.get(`${baseURL}/getCommentByUser`, { headers: { cookie: context.req.headers.cookie || "" } }),
+//       axios.get(`${baseURL}/getProfile`, { headers: { cookie: context.req.headers.cookie || "" } }),
+//       axios.get(`${baseURL}/getUsers`, { headers: { cookie: context.req.headers.cookie || "" } }),
 //     ]);
-//     console.log("=======================================================")
-//     console.log(blogsRes)
+
 //     return {
 //       props: {
 //         initialBlogs: blogsRes.data?.userBlogs || [],
 //         initialComments: commentsRes.data?.getCommentsByUserResult || [],
-//         initialProfile:profileRes.data?.getProfileResult || [],
-//         blogUsers:blogUserRes.data?.getUsersResult || [],
+//         initialProfile: profileRes.data?.getProfileResult || [],
+//         blogUsers: blogUserRes.data?.getUsersResult || [],
 //       },
 //     };
 //   } catch (err) {
@@ -118,43 +151,9 @@ const dashboard = ({ initialBlogs, initialComments ,initialProfile,blogUsers}) =
 //       };
 //     }
 
-//     return { props: { initialBlogs: [], initialComments: [] } };
+//     return { props: { initialBlogs: [], initialComments: [], initialProfile: [], blogUsers: [] } };
 //   }
 // }
-
-export async function getServerSideProps(context) {
-  try {
-    const protocol = context.req.headers['x-forwarded-proto'] || 'https';
-    const host = context.req.headers.host;
-    const baseURL = `${protocol}://${host}/api/proxy`;
-
-    const [blogsRes, commentsRes, profileRes, blogUserRes] = await Promise.all([
-      axios.get(`${baseURL}/getBlogByUser`, { headers: { cookie: context.req.headers.cookie || "" } }),
-      axios.get(`${baseURL}/getCommentByUser`, { headers: { cookie: context.req.headers.cookie || "" } }),
-      axios.get(`${baseURL}/getProfile`, { headers: { cookie: context.req.headers.cookie || "" } }),
-      axios.get(`${baseURL}/getUsers`, { headers: { cookie: context.req.headers.cookie || "" } }),
-    ]);
-
-    return {
-      props: {
-        initialBlogs: blogsRes.data?.userBlogs || [],
-        initialComments: commentsRes.data?.getCommentsByUserResult || [],
-        initialProfile: profileRes.data?.getProfileResult || [],
-        blogUsers: blogUserRes.data?.getUsersResult || [],
-      },
-    };
-  } catch (err) {
-    console.error("SSR fetch error:", err.message);
-
-    if (err.response?.status === 401) {
-      return {
-        redirect: { destination: "/login", permanent: false },
-      };
-    }
-
-    return { props: { initialBlogs: [], initialComments: [], initialProfile: [], blogUsers: [] } };
-  }
-}
 
 
 export default dashboard
