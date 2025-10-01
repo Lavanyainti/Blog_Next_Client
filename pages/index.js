@@ -30,7 +30,7 @@ export async function getStaticProps() {
   try{
    
      const axiosSSr=axios.create({
-    baseURL:"http://localhost:5001/api"
+    baseURL:"https://blog-next-server-5nzm.onrender.com/api"
   })
 
   const blogRes=await axiosSSr.get('/getBlog')
